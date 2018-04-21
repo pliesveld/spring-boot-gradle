@@ -1,0 +1,98 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.0.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+        maven { url 'https://repo.spring.io/libs-release' }
+        maven { url 'https://repo.spring.io/libs-milestone' }
+        maven { url 'https://repo.spring.io/libs-snapshot' }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+
+apply plugin: 'org.springframework.boot'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "4.5"
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'application'
+    apply plugin: 'maven'
+    apply plugin: 'checkstyle'
+
+    targetCompatibility = 1.8
+    sourceCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+        maven{ url { 'http://repo.springsource.org/libs-release/' }}
+        maven{ url { 'http://repo.springsource.org/libs-milestone/' }}
+        maven{ url { 'http://repo.springsource.org/libs-snapshot/' }}
+    }
+
+    checkstyle {
+        sourceSets = Collections.singletonList(sourceSets.main)
+        configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    }
+
+    dependencies {
+        
+    }
+}
+
+bootRun {
+	jvmArgs = [
+	    "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005",
+	]
+}
+
+bootJar {
+    enabled = true
+}
+
+version = '1.0'
+jar {
+    baseName = 'myapp'
+    version = version
+    archiveName = 'myapp.jar'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+configurations {
+    resolutionStrategy {
+        all*.exclude group: 'log4j', module: 'log4j'
+        all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+        all*.exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
+        all*.exclude group: 'ch.qos.logback', module: 'logback-core'
+        all*.exclude group: 'ch.qos.logback', module: 'logback-classic'
+        all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        all*.exclude group: 'org.springframework.boot', module: 'logback-classic'
+        all*.exclude group: 'org.springframework.boot', module: 'logback-core'
+    }
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-log4j2')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile("org.springframework.boot:spring-boot-devtools")
+    compile("org.springframework.boot:spring-boot-starter-validation")
+    compile('org.springframework.boot:spring-boot-starter-json')
+    compile('org.projectlombok:lombok')
+
+	compile 'org.slf4j:slf4j-api:1.7.21'
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+
+
+    testCompile group: 'javax.inject', name: 'javax.inject', version: '1'
+    testCompile 'junit:junit:4.12'
+    testCompile 'pl.pragmatists:JUnitParams:1.1.0'
+}
+

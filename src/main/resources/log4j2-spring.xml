@@ -1,0 +1,88 @@
+<Configuration xmlns:xi="http://www.w3.org/2001/XInclude" configDebug="false" monitorInterval="20" status="ERROR" name="CONFIG_DEV">
+	<Properties>
+		<Property name="logFolder">/tmp/log</Property>
+		<Property name="springbootdebug">spring-boot.log</Property>
+		<Property name="springdebug">spring-debug.log</Property>
+		<Property name="springweb">spring-web.log</Property>
+
+		<Property name="LOG_APP_LEVEL">WARN</Property>
+		<Property name="LOG_SPRING_LEVEL">DEBUG</Property>
+		<Property name="LOG_BEANS_LEVEL">WARN</Property>
+		<Property name="LOG_BEANS_CACHED_LEVEL">WARN</Property>
+		<Property name="LOG_MVC_LEVEL">WARN</Property>
+		<Property name="LOG_SECURITY_LEVEL">WARN</Property>
+
+		<!-- the following classes are ignored when reporting exceptions  -->
+		<Property name="filters">
+			org.junit,org.apache.maven,sun.reflect,java.lang.reflect
+		</Property>
+
+		<Property name="leveltag">
+			%highlight{%-5level}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=cyan bold, DEBUG=green bold, TRACE=blue}
+		</Property>
+
+		<Property name="loggertag">%.20c</Property>
+		<Property name="loggertag_debug">%.20c#%green{%.20method}</Property>
+		<Property name="exceptiontag_filtered">%xEx{filters(${filters})}</Property>
+	</Properties>
+
+
+	<Appenders>
+		<Console name="CONSOLE" target="SYSTEM_OUT">
+			<PatternLayout pattern="${leveltag} %c %message%rEx{4}%n"/>
+
+		</Console>
+
+		<Console name="CONSOLE_SPRING" target="SYSTEM_OUT">
+			<PatternLayout pattern="${leveltag} %replace{%cyan{%C}}{org.springframework}{} %message%n"/>
+		</Console>
+
+		<File name="FileSpringWeb" fileName="${sys:logFolder}/${springweb}" append="false">
+			<PatternLayout pattern="%msg%n"/>
+		</File>
+		<File name="FileSpringBootDebug" fileName="${sys:logFolder}/${springbootdebug}" append="false">
+			<PatternLayout pattern="%msg%n"/>
+		</File>
+	</Appenders>
+
+	<Loggers>
+		<logger name="hello" level="${sys:LOG_APP_LEVEL}" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+		</logger>
+
+		<logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="INFO" additivity="false">
+			<AppenderRef ref="FileSpringWeb"/>
+		</logger>
+
+		<logger name="org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer" level="DEBUG" additivity="false">
+			<AppenderRef ref="FileSpringBootDebug"/>
+		</logger>
+
+		<logger name="org.springframework.web.servlet.mvc" level="${sys:LOG_MVC_LEVEL}" additivity="false">
+			<AppenderRef ref="CONSOLE_SPRING"/>
+		</logger>
+		<logger name="org.springframework.web.servlet.handler" level="${sys:LOG_MVC_LEVEL}" additivity="false">
+			<AppenderRef ref="CONSOLE_SPRING"/>
+		</logger>
+		<logger name="org.springframework.security" level="${sys:LOG_SECURITY_LEVEL}" additivity="false">
+			<AppenderRef ref="CONSOLE_SPRING"/>
+		</logger>
+
+		<logger name="org.springframework.beans.CachedIntrospectionResults" level="${sys:LOG_BEANS_CACHED_LEVEL}" additivity="false">
+			<AppenderRef ref="CONSOLE_SPRING"/>
+		</logger>
+
+		<logger name="org.springframework.beans" level="${sys:LOG_BEANS_LEVEL}" additivity="false">
+			<AppenderRef ref="CONSOLE_SPRING"/>
+		</logger>
+
+		<logger name="org.springframework" level="${sys:LOG_SPRING_LEVEL}" additivity="false">
+			<AppenderRef ref="CONSOLE_SPRING"/>
+		</logger>
+
+		<Root level="WARN">
+			<AppenderRef ref="CONSOLE"/>
+		</Root>
+	</Loggers>
+</Configuration>
+
