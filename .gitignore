@@ -11,3 +11,5 @@ out
 .DS_Store
 .settings/
 bin/
+dist/
+

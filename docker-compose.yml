@@ -1,0 +1,11 @@
+version: "3.3"
+
+services:
+        greeting:
+                image: greeting
+                build:
+                        context: .
+                volumes:
+                - "./dist/:/usr/local/tomcat/webapps/"
+                ports:
+                - "8080:8080"

@@ -26,6 +26,7 @@ allprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'application'
     apply plugin: 'maven'
+    apply plugin: 'war'
     apply plugin: 'checkstyle'
 
     targetCompatibility = 1.8
@@ -66,6 +67,18 @@ jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
+war {
+
+}
+
+task copyWarToBin(type: Copy, dependsOn:[bootWar]) {
+    from 'build/libs/greeting-1.0.war'
+    into 'dist/'
+    rename { String fileName ->
+        fileName = "ROOT.war"
+    }
+}
+
 configurations {
     resolutionStrategy {
         all*.exclude group: 'log4j', module: 'log4j'
@@ -85,6 +98,9 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
     compile("org.springframework.boot:spring-boot-starter-validation")
     compile('org.springframework.boot:spring-boot-starter-json')
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+    compile("org.springframework.boot:spring-boot-devtools")
     compile('org.projectlombok:lombok')
 
 	compile 'org.slf4j:slf4j-api:1.7.21'
